@@ -2,9 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../models/expense.dart';
 
-class MonthlyLineChart extends StatelessWidget {
+class MonthlyBarChart extends StatelessWidget {
   final List<Expense> expenses;
-  const MonthlyLineChart({super.key, required this.expenses});
+  const MonthlyBarChart({super.key, required this.expenses});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,22 @@ class MonthlyLineChart extends StatelessWidget {
     }
     
     final maxDay = map.keys.isEmpty ? 30 : map.keys.reduce((a, b) => a > b ? a : b);
-    final spots = List.generate(maxDay, (i) {
+    
+    // Create bar groups
+    final barGroups = List.generate(maxDay, (i) {
       final day = i + 1;
-      return FlSpot(day.toDouble(), (map[day] ?? 0));
+      final amount = map[day] ?? 0;
+      return BarChartGroupData(
+        x: day,
+        barRods: [
+          BarChartRodData(
+            toY: amount,
+            color: Theme.of(context).primaryColor,
+            width: 6, // Bar width
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ],
+      );
     });
 
     // Calculate max Y value with some padding
@@ -53,14 +66,13 @@ class MonthlyLineChart extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox( // Use SizedBox instead of Expanded
-          height: 140, // Fixed height that fits in your 200px container
-          child: LineChart(
-            LineChartData(
-              minX: 1,
-              maxX: maxDay.toDouble(),
+        SizedBox(
+          height: 140,
+          child: BarChart(
+            BarChartData(
               minY: 0,
               maxY: maxYValue,
+              barGroups: barGroups,
               titlesData: FlTitlesData(
                 show: true,
                 rightTitles: const AxisTitles(
@@ -115,27 +127,6 @@ class MonthlyLineChart extends StatelessWidget {
                   ),
                 ),
               ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: spots,
-                  isCurved: true,
-                  barWidth: 3,
-                  color: Theme.of(context).primaryColor,
-                  belowBarData: BarAreaData(
-                    show: true,
-                    color: Theme.of(context).primaryColor.withOpacity(0.15),
-                  ),
-                  dotData: const FlDotData(show: false),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-              ],
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
@@ -148,6 +139,19 @@ class MonthlyLineChart extends StatelessWidget {
                 },
               ),
               borderData: FlBorderData(show: false),
+              barTouchData: BarTouchData(
+                enabled: true,
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                    final day = group.x;
+                    final amount = rod.toY;
+                    return BarTooltipItem(
+                      'Day $day: ₹${amount.toStringAsFixed(2)}',
+                      const TextStyle(color: Colors.white),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ),

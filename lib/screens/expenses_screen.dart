@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import '../viewmodels/expense_view_model.dart';
 import '../widgets/expense_form.dart';
 import '../widgets/charts/expense_pie_chart.dart';
-import '../widgets/charts/monthly_line_chart.dart';
+// import 'package:invotrack/widgets/charts/monthly_bar_chart.dart';
+// import '../widgets/charts/monthly_line_chart.dart';
 import 'invoice_screen.dart';
 
 class ExpensesScreen extends StatelessWidget {
@@ -50,23 +51,26 @@ class ExpensesScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
-        label: const Text('Add'),
-        onPressed: () => showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          builder: (_) => Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: ExpenseForm(onSubmit: ({
-              required title,
-              required amount,
-              required category,
-              required date,
-              String? notes,
-            }) async {
-              await vm.addExpense(title: title, amount: amount, category: category, date: date, notes: notes);
-            }),
+      floatingActionButton: Opacity(
+        opacity: 0.8, // Adjust transparency level (0.0 to 1.0)
+        child: FloatingActionButton.extended(
+          icon: const Icon(Icons.add),
+          label: const Text('Add'),
+          onPressed: () => showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (_) => Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ExpenseForm(onSubmit: ({
+                required title,
+                required amount,
+                required category,
+                required date,
+                String? notes,
+              }) async {
+                await vm.addExpense(title: title, amount: amount, category: category, date: date, notes: notes);
+              }),
+            ),
           ),
         ),
       ),
@@ -121,16 +125,16 @@ class ExpensesScreen extends StatelessWidget {
               },
             ),
           ),
-          SizedBox(
-            height: 200,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: Card(child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: MonthlyLineChart(expenses: vm.expenses),
-              )),
-            ),
-          ),
+          // SizedBox(
+          //   height: 200, 
+          //   child: Card(
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8),
+          //       child: MonthlyBarChart(expenses: vm.expenses),
+          //     ),
+          //   ),
+          // ),
+          SizedBox(height: 35)
         ],
       ),
     );
