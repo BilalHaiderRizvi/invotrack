@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "142116989551",
+    "project_id": "invotrack-d7792",
+    "storage_bucket": "invotrack-d7792.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142116989551:android:e52b5a4a92e112f2313b9a",
+        "android_client_info": {
+          "package_name": "com.digihigh.invotrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3yl1kvUgGI5Pu8iPU_6erGmvhWvIq5ls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
