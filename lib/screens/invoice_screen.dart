@@ -16,7 +16,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   final _tax = TextEditingController(text: '5');
   final _discount = TextEditingController(text: '0');
   final List<InvoiceItem> _items = [
-    const InvoiceItem(description: 'Service A', quantity: 2, rate: 1500),
+    // const InvoiceItem(description: 'Service A', quantity: 2, rate: 1500),
   ];
 
   @override
