@@ -71,7 +71,7 @@ class InvoicePdfService {
 
     // platform check
     if (Platform.isAndroid || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      // ✅ Save to Downloads folder
+      // Save to Downloads folder
       final downloads = Directory('/storage/emulated/0/Download'); // Android
       Directory saveDir = downloads;
 

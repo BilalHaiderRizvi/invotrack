@@ -11,8 +11,8 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-  final _client = TextEditingController(text: 'Acme Corp');
-  final _email = TextEditingController(text: 'billing@acme.com');
+  final _client = TextEditingController(text: 'Client Name');
+  final _email = TextEditingController(text: 'clientemail@gmail.com');
   final _tax = TextEditingController(text: '5');
   final _discount = TextEditingController(text: '0');
   final List<InvoiceItem> _items = [
