@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/invoice.dart';
 import '../services/invoice_pdf_service.dart';
@@ -11,21 +12,58 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
-  final _client = TextEditingController(text: 'Client Name');
-  final _email = TextEditingController(text: 'clientemail@gmail.com');
+  final _issuerName = TextEditingController(text: 'Your Company Name');
+  final _issuerEmail = TextEditingController(text: 'youremail@company.com');
+  final _issuerAddress = TextEditingController(text: '123 Business St, City, Country');
+  final _clientName = TextEditingController(text: 'Client Name');
+  final _clientEmail = TextEditingController(text: 'clientemail@gmail.com');
+  final _clientAddress = TextEditingController(text: '456 Client Ave, City, Country');
   final _tax = TextEditingController(text: '5');
   final _discount = TextEditingController(text: '0');
-  final List<InvoiceItem> _items = [
-    // const InvoiceItem(description: 'Service A', quantity: 2, rate: 1500),
-  ];
+  final List<InvoiceItem> _items = [];
+  
+  DateTime _issueDate = DateTime.now();
+  DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
-    _client.dispose();
-    _email.dispose();
+    _issuerName.dispose();
+    _issuerEmail.dispose();
+    _issuerAddress.dispose();
+    _clientName.dispose();
+    _clientEmail.dispose();
+    _clientAddress.dispose();
     _tax.dispose();
     _discount.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isIssueDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: isIssueDate ? _issueDate : _dueDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    
+    if (picked != null) {
+      setState(() {
+        if (isIssueDate) {
+          _issueDate = picked;
+          // If issue date is after due date, update due date too
+          if (_issueDate.isAfter(_dueDate)) {
+            _dueDate = _issueDate.add(const Duration(days: 7));
+          }
+        } else {
+          _dueDate = picked;
+        }
+      });
+    }
   }
 
   void _addItem() {
@@ -33,8 +71,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       context: context,
       builder: (ctx) {
         final desc = TextEditingController();
-        final qty = TextEditingController();
-        final rate = TextEditingController();
+        final qty = TextEditingController(text: '1');
+        final rate = TextEditingController(text: '0');
         return AlertDialog(
           title: const Text('Add Item'),
           content: Column(
@@ -80,29 +118,43 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
+  void _removeItem(int index) {
+    setState(() {
+      _items.removeAt(index);
+    });
+  }
+
   Future<void> _generate() async {
     final invoice = Invoice(
       id: const Uuid().v4(),
       userId: 'local',
       number: 'INV-${DateTime.now().millisecondsSinceEpoch}',
-      clientName: _client.text,
-      clientEmail: _email.text,
-      issueDate: DateTime.now(),
-      dueDate: DateTime.now().add(const Duration(days: 7)),
+      issuerName: _issuerName.text,
+      issuerEmail: _issuerEmail.text,
+      issuerAddress: _issuerAddress.text,
+      clientName: _clientName.text,
+      clientEmail: _clientEmail.text,
+      clientAddress: _clientAddress.text,
+      issueDate: _issueDate,
+      dueDate: _dueDate,
       items: _items,
       taxPercent: double.tryParse(_tax.text) ?? 0,
       discount: double.tryParse(_discount.text) ?? 0,
     );
     final file = await InvoicePdfService().generatePdf(invoice);
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('PDF saved at: ${file.path}')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('PDF saved at: ${file.path}'))
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final total = _items.fold<double>(0, (s, i) => s + i.total);
+    final taxAmount = total * (double.tryParse(_tax.text) ?? 0) / 100;
+    final discountAmount = double.tryParse(_discount.text) ?? 0;
+    final grandTotal = total + taxAmount - discountAmount;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Invoice Generator', style: TextStyle(fontSize: 20)),
@@ -116,13 +168,85 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            const Text('Issuer Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             TextField(
-              controller: _client,
+              controller: _issuerName,
+              decoration: const InputDecoration(labelText: 'Issuer Name'),
+            ),
+            TextField(
+              controller: _issuerEmail,
+              decoration: const InputDecoration(labelText: 'Issuer Email'),
+            ),
+            TextField(
+              controller: _issuerAddress,
+              decoration: const InputDecoration(labelText: 'Issuer Address'),
+              maxLines: 2,
+            ),
+            
+            const SizedBox(height: 20),
+            const Text('Client Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            TextField(
+              controller: _clientName,
               decoration: const InputDecoration(labelText: 'Client Name'),
             ),
             TextField(
-              controller: _email,
+              controller: _clientEmail,
               decoration: const InputDecoration(labelText: 'Client Email'),
+            ),
+            TextField(
+              controller: _clientAddress,
+              decoration: const InputDecoration(labelText: 'Client Address'),
+              maxLines: 2,
+            ),
+            
+            const SizedBox(height: 20),
+            const Text('Invoice Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Issue Date'),
+                      InkWell(
+                        onTap: () => _selectDate(context, true),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(DateFormat('yyyy-MM-dd').format(_issueDate)),
+                              const Icon(Icons.calendar_today, size: 18),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Due Date'),
+                      InkWell(
+                        onTap: () => _selectDate(context, false),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(DateFormat('yyyy-MM-dd').format(_dueDate)),
+                              const Icon(Icons.calendar_today, size: 18),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
@@ -143,15 +267,25 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            const Text('Items', style: TextStyle(fontWeight: FontWeight.bold)),
-            ..._items.map(
-              (e) => ListTile(
-                title: Text(e.description),
+            
+            const SizedBox(height: 20),
+            const Text('Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ..._items.asMap().entries.map(
+              (entry) => ListTile(
+                title: Text(entry.value.description),
                 subtitle: Text(
-                  'Qty: ${e.quantity} • Rate: ${e.rate.toStringAsFixed(2)}',
+                  'Qty: ${entry.value.quantity} • Rate: ${entry.value.rate.toStringAsFixed(2)}',
                 ),
-                trailing: Text(e.total.toStringAsFixed(2)),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(entry.value.total.toStringAsFixed(2)),
+                    IconButton(
+                      icon: const Icon(Icons.delete, size: 20),
+                      onPressed: () => _removeItem(entry.key),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -163,7 +297,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   label: const Text('Add Item'),
                 ),
                 const Spacer(),
-                Text('Subtotal: ${total.toStringAsFixed(2)}'),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Subtotal: ${total.toStringAsFixed(2)}'),
+                    Text('Tax: ${taxAmount.toStringAsFixed(2)}'),
+                    Text('Discount: ${discountAmount.toStringAsFixed(2)}'),
+                    Text('Total: ${grandTotal.toStringAsFixed(2)}', 
+                         style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ],
             ),
           ],
@@ -172,3 +315,4 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 }
+
