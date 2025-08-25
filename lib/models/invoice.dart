@@ -17,8 +17,13 @@ class Invoice {
   final String id;
   final String userId;
   final String number;
+  final String issuerName;
+  final String? issuerEmail;
+  final String issuerAddress;
+  final String? issuerGst;
   final String clientName;
   final String? clientEmail;
+  final String clientAddress;
   final DateTime issueDate;
   final DateTime dueDate;
   final List<InvoiceItem> items;
@@ -30,8 +35,13 @@ class Invoice {
     required this.id,
     required this.userId,
     required this.number,
+    required this.issuerName,
+    this.issuerEmail,
+    required this.issuerAddress,
+    this.issuerGst,
     required this.clientName,
     this.clientEmail,
+    required this.clientAddress,
     required this.issueDate,
     required this.dueDate,
     required this.items,
@@ -48,8 +58,13 @@ class Invoice {
         'id': id,
         'userId': userId,
         'number': number,
+        'issuerName': issuerName,
+        'issuerEmail': issuerEmail,
+        'issuerAddress': issuerAddress,
+        'issuerGst': issuerGst,
         'clientName': clientName,
         'clientEmail': clientEmail,
+        'clientAddress': clientAddress,
         'issueDate': issueDate.toIso8601String(),
         'dueDate': dueDate.toIso8601String(),
         'items': items.map((e) => e.toJson()).toList(),
@@ -62,8 +77,13 @@ class Invoice {
         id: json['id'],
         userId: json['userId'],
         number: json['number'],
+        issuerName: json['issuerName'],
+        issuerEmail: json['issuerEmail'],
+        issuerAddress: json['issuerAddress'],
+        issuerGst: json['issuerGst'], 
         clientName: json['clientName'],
         clientEmail: json['clientEmail'],
+        clientAddress: json['clientAddress'],
         issueDate: DateTime.parse(json['issueDate']),
         dueDate: DateTime.parse(json['dueDate']),
         items: (json['items'] as List).map((e) => InvoiceItem.fromJson(e)).toList(),
