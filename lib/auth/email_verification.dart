@@ -11,10 +11,10 @@ class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
 
   @override
-  _EmailVerificationScreenState createState() => _EmailVerificationScreenState();
+  EmailVerificationScreenState createState() => EmailVerificationScreenState();
 }
 
-class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
+class EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _isLoading = false;
   bool _isResending = false;
   final User? _user = FirebaseAuth.instance.currentUser;
@@ -66,7 +66,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       await context.read<AuthService>().sendEmailVerification();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email sent!')),
+          const SnackBar(content: Text('Verification email sent! {Check Spam If Not Seeing It}!!')),
         );
       }
     } catch (e) {

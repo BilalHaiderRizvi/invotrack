@@ -48,6 +48,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 decoration: const InputDecoration(labelText: 'Title'),
                 validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
               ),
+              SizedBox(height: 5),
               TextFormField(
                 controller: _amount,
                 decoration: const InputDecoration(labelText: 'Amount'),
@@ -59,12 +60,14 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   return null;
                 },
               ),
+              SizedBox(height: 7),
               DropdownButtonFormField<String>(
                 value: _category,
                 items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                 onChanged: (v) => setState(() => _category = v!),
                 decoration: const InputDecoration(labelText: 'Category'),
               ),
+              SizedBox(height: 5),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Date'),

@@ -13,16 +13,20 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   final _issuerName = TextEditingController(text: 'Your Company Name');
-  final _issuerEmail = TextEditingController(text: 'youremail@company.com');
-  final _issuerAddress = TextEditingController(text: '123 Business St, City, Country');
+  final _issuerEmail = TextEditingController(text: 'youremail@gmail.com');
+  final _issuerAddress = TextEditingController(
+    text: '123 Business St, City, Country',
+  );
   final _issuerGst = TextEditingController(text: 'Enter the GSTN');
   final _clientName = TextEditingController(text: 'Client Name');
   final _clientEmail = TextEditingController(text: 'clientemail@gmail.com');
-  final _clientAddress = TextEditingController(text: '456 Client Ave, City, Country');
+  final _clientAddress = TextEditingController(
+    text: '456 Client Ave, City, Country',
+  );
   final _tax = TextEditingController(text: '5');
   final _discount = TextEditingController(text: '0');
   final List<InvoiceItem> _items = [];
-  
+
   DateTime _issueDate = DateTime.now();
   DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
 
@@ -36,7 +40,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     _issuerName.dispose();
     _issuerEmail.dispose();
     _issuerAddress.dispose();
-    _issuerGst.dispose(); 
+    _issuerGst.dispose();
     _clientName.dispose();
     _clientEmail.dispose();
     _clientAddress.dispose();
@@ -52,7 +56,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isIssueDate) {
@@ -84,11 +88,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 controller: desc,
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
+              const SizedBox(height: 12),
               TextField(
                 controller: qty,
                 decoration: const InputDecoration(labelText: 'Qty'),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 12),
               TextField(
                 controller: rate,
                 decoration: const InputDecoration(labelText: 'Rate'),
@@ -130,11 +136,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final invoice = Invoice(
       id: const Uuid().v4(),
       userId: 'local',
-      number: 'INV-${DateTime.now().toString().split(' ').first.replaceAll('-', '')}',
+      number:
+          'INV-${DateTime.now().toString().split(' ').first.replaceAll('-', '')}',
       issuerName: _issuerName.text,
       issuerEmail: _issuerEmail.text,
       issuerAddress: _issuerAddress.text,
-      issuerGst: _issuerGst.text.isNotEmpty ? _issuerGst.text : null, // GST field
+      issuerGst: _issuerGst.text.isNotEmpty
+          ? _issuerGst.text
+          : null, // GST field
       clientName: _clientName.text,
       clientEmail: _clientEmail.text,
       clientAddress: _clientAddress.text,
@@ -146,9 +155,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
     final file = await InvoicePdfService().generatePdf(invoice);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('PDF saved at: ${file.path}'))
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('PDF saved at: ${file.path}')));
   }
 
   @override
@@ -157,7 +166,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final taxAmount = total * (double.tryParse(_tax.text) ?? 0) / 100;
     final discountAmount = double.tryParse(_discount.text) ?? 0;
     final grandTotal = total + taxAmount - discountAmount;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Invoice Generator', style: TextStyle(fontSize: 20)),
@@ -174,20 +183,27 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            const Text('Issuer Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Issuer Information',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _issuerName,
               decoration: const InputDecoration(labelText: 'Issuer Name'),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: _issuerEmail,
               decoration: const InputDecoration(labelText: 'Issuer Email'),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: _issuerAddress,
               decoration: const InputDecoration(labelText: 'Issuer Address'),
               maxLines: 2,
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: _issuerGst,
               decoration: const InputDecoration(
@@ -195,26 +211,42 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 hintText: 'e.g., 07AABCU9603R1ZM',
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
-            const Text('Client Information', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+            const Text(
+              'Client Information',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 16),
+
             TextField(
               controller: _clientName,
               decoration: const InputDecoration(labelText: 'Client Name'),
             ),
+            const SizedBox(height: 12),
             TextField(
               controller: _clientEmail,
               decoration: const InputDecoration(labelText: 'Client Email'),
             ),
+
+            const SizedBox(height: 12),
+
             TextField(
               controller: _clientAddress,
               decoration: const InputDecoration(labelText: 'Client Address'),
               maxLines: 2,
             ),
-            
+
             const SizedBox(height: 20),
-            const Text('Invoice Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+
+            const Text(
+              'Invoice Details',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -222,6 +254,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Issue Date'),
+
+                      const SizedBox(height: 8),
+
                       InkWell(
                         onTap: () => _selectDate(context, true),
                         child: InputDecorator(
@@ -244,6 +279,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Due Date'),
+
+                      const SizedBox(height: 8),
+
                       InkWell(
                         onTap: () => _selectDate(context, false),
                         child: InputDecorator(
@@ -262,6 +300,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -281,9 +320,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 20),
-            const Text('Items', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Items',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             ..._items.asMap().entries.map(
               (entry) => ListTile(
                 title: Text(entry.value.description),
@@ -317,16 +359,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     Text('Subtotal: ${total.toStringAsFixed(2)}'),
                     Text('Tax: ${taxAmount.toStringAsFixed(2)}'),
                     Text('Discount: ${discountAmount.toStringAsFixed(2)}'),
-                    Text('Total: ${grandTotal.toStringAsFixed(2)}', 
-                         style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Total: ${grandTotal.toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
               ],
             ),
+            const SizedBox(height: 60),
           ],
         ),
       ),
     );
   }
 }
-

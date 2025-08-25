@@ -399,13 +399,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 10),
                 Center(
                   child: Text(
-                    '© 2024 INVOTRACK App',
+                    '© 2025 Miftah Software',
                     style: TextStyle(
                       color: Colors.grey[500],
                       fontSize: 10,
                     ),
                   ),
                 ),
+                const SizedBox(height: 50),
               ],
             ),
     );

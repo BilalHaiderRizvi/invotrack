@@ -28,6 +28,8 @@ class LoginScreenState extends State<LoginScreen> {
         _emailController.text, 
         _passwordController.text
       );
+
+      await auth.reloadUser();
       
       // Check if email is verified
       if (!auth.isEmailVerified) {
