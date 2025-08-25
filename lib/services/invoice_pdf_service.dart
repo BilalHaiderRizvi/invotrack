@@ -48,7 +48,7 @@ class InvoicePdfService {
                   if (invoice.issuerEmail != null) pw.Text(invoice.issuerEmail!),
                   pw.Text(invoice.issuerAddress),
                   if (invoice.issuerGst != null && invoice.issuerGst!.isNotEmpty)
-                    pw.Text('GSTIN: ${invoice.issuerGst}'),
+                    pw.Text('GSTN: ${invoice.issuerGst}'),
                 ],
               ),
               
@@ -129,9 +129,14 @@ class InvoicePdfService {
           pw.SizedBox(height: 30),
           
           // Footer with thank you message
-          pw.Center(
-            child: pw.Text('Thank you for your business!', 
-                          style: pw.TextStyle(fontStyle: pw.FontStyle.italic)),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Thank you for your business!',
+                style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+              ),
+            ],
           ),
         ],
       ),

@@ -130,11 +130,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final invoice = Invoice(
       id: const Uuid().v4(),
       userId: 'local',
-      number: 'INV-${DateTime.now().millisecondsSinceEpoch}',
+      number: 'INV-${DateTime.now().toString().split(' ').first.replaceAll('-', '')}',
       issuerName: _issuerName.text,
       issuerEmail: _issuerEmail.text,
       issuerAddress: _issuerAddress.text,
-      issuerGst: _issuerGst.text.isNotEmpty ? _issuerGst.text : null, // New GST field
+      issuerGst: _issuerGst.text.isNotEmpty ? _issuerGst.text : null, // GST field
       clientName: _clientName.text,
       clientEmail: _clientEmail.text,
       clientAddress: _clientAddress.text,
