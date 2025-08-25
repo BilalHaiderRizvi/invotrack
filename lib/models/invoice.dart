@@ -20,6 +20,7 @@ class Invoice {
   final String issuerName;
   final String? issuerEmail;
   final String issuerAddress;
+  final String? issuerGst;
   final String clientName;
   final String? clientEmail;
   final String clientAddress;
@@ -37,6 +38,7 @@ class Invoice {
     required this.issuerName,
     this.issuerEmail,
     required this.issuerAddress,
+    this.issuerGst,
     required this.clientName,
     this.clientEmail,
     required this.clientAddress,
@@ -59,6 +61,7 @@ class Invoice {
         'issuerName': issuerName,
         'issuerEmail': issuerEmail,
         'issuerAddress': issuerAddress,
+        'issuerGst': issuerGst,
         'clientName': clientName,
         'clientEmail': clientEmail,
         'clientAddress': clientAddress,
@@ -77,6 +80,7 @@ class Invoice {
         issuerName: json['issuerName'],
         issuerEmail: json['issuerEmail'],
         issuerAddress: json['issuerAddress'],
+        issuerGst: json['issuerGst'], 
         clientName: json['clientName'],
         clientEmail: json['clientEmail'],
         clientAddress: json['clientAddress'],

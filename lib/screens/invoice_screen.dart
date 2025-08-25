@@ -15,6 +15,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   final _issuerName = TextEditingController(text: 'Your Company Name');
   final _issuerEmail = TextEditingController(text: 'youremail@company.com');
   final _issuerAddress = TextEditingController(text: '123 Business St, City, Country');
+  final _issuerGst = TextEditingController(text: 'Enter the GSTN');
   final _clientName = TextEditingController(text: 'Client Name');
   final _clientEmail = TextEditingController(text: 'clientemail@gmail.com');
   final _clientAddress = TextEditingController(text: '456 Client Ave, City, Country');
@@ -35,6 +36,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     _issuerName.dispose();
     _issuerEmail.dispose();
     _issuerAddress.dispose();
+    _issuerGst.dispose(); 
     _clientName.dispose();
     _clientEmail.dispose();
     _clientAddress.dispose();
@@ -132,6 +134,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       issuerName: _issuerName.text,
       issuerEmail: _issuerEmail.text,
       issuerAddress: _issuerAddress.text,
+      issuerGst: _issuerGst.text.isNotEmpty ? _issuerGst.text : null, // New GST field
       clientName: _clientName.text,
       clientEmail: _clientEmail.text,
       clientAddress: _clientAddress.text,
@@ -159,10 +162,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       appBar: AppBar(
         title: const Text('Invoice Generator', style: TextStyle(fontSize: 20)),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _generate,
-        icon: const Icon(Icons.picture_as_pdf),
-        label: const Text('Generate PDF'),
+      floatingActionButton: Opacity(
+        opacity: 0.8, // Adjust transparency level (0.0 to 1.0)
+        child: FloatingActionButton.extended(
+          onPressed: _generate,
+          icon: const Icon(Icons.picture_as_pdf),
+          label: const Text('Generate PDF'),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -182,9 +188,17 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               decoration: const InputDecoration(labelText: 'Issuer Address'),
               maxLines: 2,
             ),
+            TextField(
+              controller: _issuerGst,
+              decoration: const InputDecoration(
+                labelText: 'Issuer GSTIN (Optional)',
+                hintText: 'e.g., 07AABCU9603R1ZM',
+              ),
+            ),
             
             const SizedBox(height: 20),
-            const Text('Client Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            
+            const Text('Client Information', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             TextField(
               controller: _clientName,
               decoration: const InputDecoration(labelText: 'Client Name'),

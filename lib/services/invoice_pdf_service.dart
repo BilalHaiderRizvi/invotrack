@@ -20,6 +20,7 @@ class InvoicePdfService {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               pw.Text('INVOICE', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
@@ -46,6 +47,8 @@ class InvoicePdfService {
                   pw.Text(invoice.issuerName),
                   if (invoice.issuerEmail != null) pw.Text(invoice.issuerEmail!),
                   pw.Text(invoice.issuerAddress),
+                  if (invoice.issuerGst != null && invoice.issuerGst!.isNotEmpty)
+                    pw.Text('GSTIN: ${invoice.issuerGst}'),
                 ],
               ),
               
