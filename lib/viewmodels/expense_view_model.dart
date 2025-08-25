@@ -19,7 +19,12 @@ class ExpenseViewModel extends ChangeNotifier {
 
   void init() {
     final uid = auth.uid;
-    if (uid == null) return;
+    if (uid == null) {
+      expenses = [];
+      notifyListeners();
+      return;
+    }
+    
     _sub?.cancel();
     _sub = expenseService.streamByMonth(uid, currentMonth).listen((data) {
       expenses = data;
@@ -40,7 +45,9 @@ class ExpenseViewModel extends ChangeNotifier {
     required DateTime date,
     String? notes,
   }) async {
-    final uid = auth.uid!;
+    final uid = auth.uid;
+    if (uid == null) throw Exception('User not authenticated');
+    
     final now = DateTime.now();
     final exp = Expense(
       id: _uuid.v4(),
@@ -58,7 +65,9 @@ class ExpenseViewModel extends ChangeNotifier {
   }
 
   Future<void> deleteExpense(String id) async {
-    final uid = auth.uid!;
+    final uid = auth.uid;
+    if (uid == null) throw Exception('User not authenticated');
+    
     await expenseService.softDelete(uid, id);
   }
 

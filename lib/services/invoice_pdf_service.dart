@@ -19,7 +19,13 @@ class InvoicePdfService {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Text('INVOICE', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'INVOICE',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 10),
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
@@ -31,9 +37,9 @@ class InvoicePdfService {
               ),
             ],
           ),
-          
+
           pw.SizedBox(height: 20),
-          
+
           // Issuer and client information in two columns
           pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -43,46 +49,57 @@ class InvoicePdfService {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('From:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    'From:',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
                   pw.Text(invoice.issuerName),
-                  if (invoice.issuerEmail != null) pw.Text(invoice.issuerEmail!),
+                  if (invoice.issuerEmail != null)
+                    pw.Text(invoice.issuerEmail!),
                   pw.Text(invoice.issuerAddress),
-                  if (invoice.issuerGst != null && invoice.issuerGst!.isNotEmpty)
-                    pw.Text('GSTIN: ${invoice.issuerGst}'),
+                  if (invoice.issuerGst != null &&
+                      invoice.issuerGst!.isNotEmpty)
+                    pw.Text('GSTN: ${invoice.issuerGst}'),
                 ],
               ),
-              
+
               // Client information
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('To:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    'To:',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
                   pw.Text(invoice.clientName),
-                  if (invoice.clientEmail != null) pw.Text(invoice.clientEmail!),
+                  if (invoice.clientEmail != null)
+                    pw.Text(invoice.clientEmail!),
                   pw.Text(invoice.clientAddress),
                 ],
               ),
             ],
           ),
-          
+
           pw.SizedBox(height: 30),
-          
+
           // Invoice items table
           pw.TableHelper.fromTextArray(
             headers: ['Description', 'Qty', 'Rate', 'Total'],
             headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             data: invoice.items
-                .map((e) => [
-                      e.description,
-                      e.quantity.toString(),
-                      e.rate.toStringAsFixed(2),
-                      e.total.toStringAsFixed(2)
-                    ])
+                .map(
+                  (e) => [
+                    e.description,
+                    e.quantity.toString(),
+                    e.rate.toStringAsFixed(2),
+                    e.total.toStringAsFixed(2),
+                  ],
+                )
                 .toList(),
           ),
-          
+
           pw.SizedBox(height: 20),
-          
+
           // Summary section
           pw.Align(
             alignment: pw.Alignment.centerRight,
@@ -101,7 +118,9 @@ class InvoicePdfService {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      pw.Text('Tax (${invoice.taxPercent.toStringAsFixed(0)}%):'),
+                      pw.Text(
+                        'Tax (${invoice.taxPercent.toStringAsFixed(0)}%):',
+                      ),
                       pw.Text(invoice.tax.toStringAsFixed(2)),
                     ],
                   ),
@@ -116,29 +135,42 @@ class InvoicePdfService {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      pw.Text('TOTAL:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                      pw.Text(invoice.total.toStringAsFixed(2), 
-                             style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      pw.Text(
+                        'TOTAL:',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
+                      pw.Text(
+                        invoice.total.toStringAsFixed(2),
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          
+
           pw.SizedBox(height: 30),
-          
+
           // Footer with thank you message
-          pw.Center(
-            child: pw.Text('Thank you for your business!', 
-                          style: pw.TextStyle(fontStyle: pw.FontStyle.italic)),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Thank You!',
+                style: pw.TextStyle(fontStyle: pw.FontStyle.italic),
+              ),
+            ],
           ),
         ],
       ),
     );
 
     // Save file logic (unchanged)
-    if (Platform.isAndroid || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    if (Platform.isAndroid ||
+        Platform.isWindows ||
+        Platform.isLinux ||
+        Platform.isMacOS) {
       final downloads = Directory('/storage/emulated/0/Download');
       Directory saveDir = downloads;
 

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:invotrack/auth/email_verification.dart';
+import 'package:invotrack/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,17 +15,14 @@ import 'screens/expenses_screen.dart';
 Future<void> _configureFirestore() async {
   if (kIsWeb) {
     try {
-      // ✅ Enable persistence with tab sync (web)
       FirebaseFirestore.instance.settings = const Settings(
         persistenceEnabled: true,
         cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-        // Web automatically syncs tabs if persistenceEnabled = true
       );
     } catch (e) {
       debugPrint("⚠️ Firestore persistence error (web): $e");
     }
   } else {
-    // ✅ On mobile, same settings API
     FirebaseFirestore.instance.settings = Settings(
       persistenceEnabled: true,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
@@ -34,15 +33,7 @@ Future<void> _configureFirestore() async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Enable offline cache for all platforms (v5+ way)
   await _configureFirestore();
-
-  // Anonymous login for demo
-  if (FirebaseAuth.instance.currentUser == null) {
-    await FirebaseAuth.instance.signInAnonymously();
-  }
-
   runApp(const AppRoot());
 }
 
@@ -61,15 +52,65 @@ class AppRoot extends StatelessWidget {
           create: (ctx) => ExpenseViewModel(
             auth: ctx.read<AuthService>(),
             expenseService: ctx.read<ExpenseService>(),
-          )..init(),
+          ),
         ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'INVOTRACK',
-        theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.teal),
-        home: const ExpensesScreen(),
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: Colors.teal,
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        home: const AuthWrapper(),
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final authService = context.watch<AuthService>();
+    
+    return StreamBuilder<User?>(
+      stream: authService.authStateChanges,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        final user = snapshot.data;
+        
+        // No user logged in
+        if (user == null) {
+          return const LoginScreen();
+        }
+        
+        // User logged in but email not verified
+        if (!user.emailVerified) {
+          return const EmailVerificationScreen();
+        }
+        
+        // User logged in and email verified - initialize expense view model
+        final expenseViewModel = context.read<ExpenseViewModel>();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          expenseViewModel.init();
+        });
+        
+        return const ExpensesScreen();
+      },
     );
   }
 }

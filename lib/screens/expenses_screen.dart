@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:invotrack/screens/settings.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/expense_view_model.dart';
 import '../widgets/expense_form.dart';
 import '../widgets/charts/expense_pie_chart.dart';
-// import 'package:invotrack/widgets/charts/monthly_bar_chart.dart';
-// import '../widgets/charts/monthly_line_chart.dart';
+import '../services/auth_service.dart';
 import 'invoice_screen.dart';
 
 class ExpensesScreen extends StatelessWidget {
@@ -14,11 +14,12 @@ class ExpensesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ExpenseViewModel>();
+    final auth = context.watch<AuthService>();
     final df = DateFormat.yMMMM();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expenses — ${df.format(vm.currentMonth)}', style: TextStyle(fontSize: 16),),
+        title: Text('Expenses — ${df.format(vm.currentMonth)}', style: const TextStyle(fontSize: 16)),
         actions: [
           IconButton(
             tooltip: 'Previous Month',
@@ -49,10 +50,17 @@ class ExpensesScreen extends StatelessWidget {
             },
             icon: const Icon(Icons.picture_as_pdf),
           ),
+          IconButton(
+            tooltip: 'Settings',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+            },
+            icon: const Icon(Icons.settings),
+          ),
         ],
       ),
       floatingActionButton: Opacity(
-        opacity: 0.8, // Adjust transparency level (0.0 to 1.0)
+        opacity: 0.8,
         child: FloatingActionButton.extended(
           icon: const Icon(Icons.add),
           label: const Text('Add'),
@@ -76,7 +84,6 @@ class ExpensesScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Summary cards
           Padding(
             padding: const EdgeInsets.all(12),
             child: IntrinsicHeight(
@@ -125,16 +132,7 @@ class ExpensesScreen extends StatelessWidget {
               },
             ),
           ),
-          // SizedBox(
-          //   height: 200, 
-          //   child: Card(
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8),
-          //       child: MonthlyBarChart(expenses: vm.expenses),
-          //     ),
-          //   ),
-          // ),
-          SizedBox(height: 35)
+          const SizedBox(height: 35)
         ],
       ),
     );
