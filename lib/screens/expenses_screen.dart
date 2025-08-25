@@ -18,7 +18,7 @@ class ExpensesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expenses — ${df.format(vm.currentMonth)}'),
+        title: Text('Expenses — ${df.format(vm.currentMonth)}', style: TextStyle(fontSize: 16),),
         actions: [
           IconButton(
             tooltip: 'Previous Month',
